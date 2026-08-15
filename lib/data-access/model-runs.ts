@@ -7,7 +7,7 @@
 
 import { and, desc, eq } from 'drizzle-orm';
 
-import { modelRuns } from '@/db/schema/index';
+import { jobs, modelRuns } from '@/db/schema/index';
 
 import type { KetNoiDrizzle } from './guard';
 
@@ -40,6 +40,29 @@ export function modelRunsRepo(db: KetNoiDrizzle, workspaceId: string) {
           and(eq(modelRuns.workspaceId, workspaceId), eq(modelRuns.contentId, contentId)),
         )
         .orderBy(desc(modelRuns.ngayTao));
+    },
+
+    /**
+     * Lay lan chay moi nhat cua MOT job trong DUNG workspace dang cam repo.
+     *
+     * Join voi `jobs` de mot dong model run loi pham vi (neu co) cung khong the
+     * lam `jobId` cua workspace khac tro thanh du lieu hop le cua workspace nay.
+     */
+    async layTheoJob(jobId: string) {
+      const [dong] = await db
+        .select({ modelRun: modelRuns })
+        .from(modelRuns)
+        .innerJoin(jobs, eq(modelRuns.jobId, jobs.id))
+        .where(
+          and(
+            eq(modelRuns.workspaceId, workspaceId),
+            eq(jobs.workspaceId, workspaceId),
+            eq(modelRuns.jobId, jobId),
+          ),
+        )
+        .orderBy(desc(modelRuns.ngayTao))
+        .limit(1);
+      return dong?.modelRun ?? null;
     },
   };
 }

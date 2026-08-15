@@ -64,6 +64,20 @@
       "when": 1786604797343,
       "tag": "0008_superb_silver_samurai",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1786782714978,
+      "tag": "0009_bent_serpent_society",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1786787808102,
+      "tag": "0010_peaceful_plazm",
+      "breakpoints": true
     }
   ]
 }

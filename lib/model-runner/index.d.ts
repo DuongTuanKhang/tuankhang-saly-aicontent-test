@@ -8,6 +8,7 @@
  */
 
 import type { Pool, PoolClient } from 'pg';
+import type { UngVienDeXuat } from '@/lib/studio/kieu';
 
 export type NhiemVuMoHinh =
   | 'viet-bai'
@@ -31,6 +32,8 @@ export interface ThamSoChayNhiemVu {
   cho?: boolean;
   /** `null` = tat chan trung cho viec nay. Bo trong = tu sinh tu noi dung viec. */
   khoaChongTrung?: string | null;
+  /** Du lieu rieng cua may chu tren jobs; khong duoc dua vao prompt hay worker input. */
+  ungVienDeXuat?: UngVienDeXuat | null;
   hetGioChoMs?: number;
   khachHang?: Pool | PoolClient;
 }

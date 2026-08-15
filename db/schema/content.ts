@@ -211,6 +211,8 @@ export const ideas = pgTable(
     id: idUuid(),
     workspaceId: khoaWorkspace(),
     beMat: beMat('be_mat').notNull(),
+    /** Co the rong o cac dong lich su; y tuong moi luon phai co tieu de. */
+    tieuDe: text('tieu_de'),
     gocTiepCan: text('goc_tiep_can'),
     pillarId: uuid('pillar_id').references(() => contentPillars.id, {
       onDelete: 'set null',
@@ -226,6 +228,7 @@ export const ideas = pgTable(
     modelRunId: uuid('model_run_id').references(() => modelRuns.id, {
       onDelete: 'set null',
     }),
+    khamPha: boolean('kham_pha').notNull().default(false),
     daDung: boolean('da_dung').notNull().default(false),
     ngayTao: ngayTao(),
   },

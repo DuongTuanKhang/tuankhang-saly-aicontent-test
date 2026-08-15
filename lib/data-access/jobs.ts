@@ -6,11 +6,12 @@
  * PostgreSQL rieng cua tien trinh nen.
  */
 
-import { and, desc, eq, inArray } from 'drizzle-orm';
+import { and, desc, eq, inArray, sql } from 'drizzle-orm';
 
 import { jobs } from '@/db/schema/index';
 
 import type { KetNoiDrizzle } from './guard';
+import type { UngVienDeXuat } from '@/lib/studio/kieu';
 
 type ThemJob = Omit<typeof jobs.$inferInsert, 'workspaceId'>;
 type SuaJob = Partial<Omit<typeof jobs.$inferInsert, 'workspaceId' | 'id'>>;
@@ -37,6 +38,41 @@ export function jobsRepo(db: KetNoiDrizzle, workspaceId: string) {
         .where(and(eq(jobs.id, id), eq(jobs.workspaceId, workspaceId)))
         .limit(1);
       return dong ?? null;
+    },
+
+    /** Doc ban chup Studio cua job trong DUNG workspace dang cam repo. */
+    async layUngVienDeXuat(id: string): Promise<UngVienDeXuat | null> {
+      const [dong] = await db
+        .select({ ungVienDeXuat: jobs.ungVienDeXuat })
+        .from(jobs)
+        .where(and(eq(jobs.id, id), eq(jobs.workspaceId, workspaceId)))
+        .limit(1);
+      return (dong?.ungVienDeXuat as UngVienDeXuat | null | undefined) ?? null;
+    },
+
+    /**
+     * Chuyen trang thai ung vien mot lan, co dieu kien workspace + trang thai
+     * cu. Ket qua null nghia la job khong thuoc workspace hoac da co ben khac
+     * chuyen trang thai truoc do.
+     */
+    async chuyenTrangThaiUngVienDeXuat(
+      id: string,
+      tuTrangThai: UngVienDeXuat['trangThai'],
+      ungVienDeXuat: UngVienDeXuat,
+    ): Promise<UngVienDeXuat | null> {
+      const [dong] = await db
+        .update(jobs)
+        .set({ ungVienDeXuat: ungVienDeXuat as never, capNhat: new Date() })
+        .where(
+          and(
+            eq(jobs.id, id),
+            eq(jobs.workspaceId, workspaceId),
+            eq(jobs.trangThai, 'xong'),
+            sql`${jobs.ungVienDeXuat}->>'trangThai' = ${tuTrangThai}`,
+          ),
+        )
+        .returning({ ungVienDeXuat: jobs.ungVienDeXuat });
+      return (dong?.ungVienDeXuat as UngVienDeXuat | null | undefined) ?? null;
     },
 
     /**

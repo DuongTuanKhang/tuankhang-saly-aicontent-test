@@ -90,6 +90,8 @@ export const jobs = pgTable(
     lockedAt: timestamp('locked_at', { withTimezone: true }),
     loi: text('loi'),
     ketQua: jsonb('ket_qua').$type<Jsonb>(),
+    /** Ung vien Studio da duoc may chu gan nguon, tach khoi ket qua tho cua worker. */
+    ungVienDeXuat: jsonb('ung_vien_de_xuat').$type<Jsonb>(),
     ngayTao: ngayTao(),
     capNhat: capNhat(),
   },
